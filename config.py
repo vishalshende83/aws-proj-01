@@ -1,5 +1,5 @@
-customhost = "employee-01.clvaaitgxi3g.us-east-1.rds.amazonaws.com"
-customuser = "vshende"
+customhost = "vshende-db.clvaaitgxi3g.us-east-1.rds.amazonaws.com"
+customuser = "admin"
 custompass = "password"
 customdb = "employee"
 custombucket = "vshende-employee"
