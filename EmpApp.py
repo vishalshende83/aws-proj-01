@@ -25,11 +25,13 @@ table = 'employee'
 def home():
     return render_template('AddEmp.html')
 
+@app.route("/updatedata", methods=['GET', 'POST'])
+def updatedata():
+    return render_template('AddEmp.html')
 
-@app.route("/about", methods=['POST'])
-def about():
-    return render_template('www.intellipaat.com')
-
+@app.route("/getemp", methods=['POST'])
+def getemp():
+    return render_template('GetEmp.html')
 
 @app.route("/addemp", methods=['POST'])
 def AddEmp():
@@ -81,15 +83,29 @@ def AddEmp():
     return render_template('AddEmpOutput.html', name=emp_name)
 
 
-@app.route("/getemp", methods=['POST'])
-def GetEmp():
-    emp_id = "1"
+@app.route("/fetchdata", methods=['POST'])
+def fetchdata():
+    emp_id = request.form['emp_id']
     select_sql = "Select * from employee where emp_id in (%s)"
     cursor = db_conn.cursor()
     cursor.execute(select_sql, (emp_id))
     data = cursor.fetchone()
-    print(data[0])
+    employee_id=data[0]
+    employee_first_name = data[1]
+    employee_last_name = data[2]
+    employee_pri_skill = data[3]
+    employee_location = data[4]
     cursor.close()
+    emp_image_file_name_in_s3 = "emp-id-" + str(emp_id) + "_image_file"
+    s3 = boto3.resource('s3')
+    bucket_location = boto3.client('s3').get_bucket_location(Bucket=custombucket)
+    s3_location = (bucket_location['LocationConstraint'])
+    if s3_location is None:
+     s3_location = ''
+    else:
+     s3_location = '-' + s3_location
+    object_url = "https://s3{0}.amazonaws.com/{1}/{2}".format(s3_location, custombucket, emp_image_file_name_in_s3)
+    return render_template('GetEmpOutput.html', id=employee_id , fname=employee_first_name , lname=employee_last_name , interest=employee_pri_skill , location=employee_location , image_url=object_url )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
