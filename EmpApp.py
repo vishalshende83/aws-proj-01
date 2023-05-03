@@ -81,5 +81,15 @@ def AddEmp():
     return render_template('AddEmpOutput.html', name=emp_name)
 
 
+@app.route("/getemp", methods=['POST'])
+def GetEmp():
+    emp_id = "1"
+    select_sql = "Select * from employee where emp_id in (%s)"
+    cursor = db_conn.cursor()
+    cursor.execute(select_sql, (emp_id))
+    data = cursor.fetchone()
+    print(data[0])
+    cursor.close()
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
